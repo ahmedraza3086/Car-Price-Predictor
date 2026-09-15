@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Car Price Predictor</title>
+</head>
+<link rel="stylesheet" href="static/css/style.css">
+<body>
+    <div class="container border">
+        <div class="row">
+            <div class="card_header border " style="text-align:center ">
+                <h1 style="font-size: 35px">Welcome to Car Price Predictor</h1>
+            </div>
+            <div class="card_body" style="margin-top:50px; font-size: 20px">
+                <form  method="post" accept-charset="utf-8">
+                    <div class="border" style="text-align: center ">
+                        <label><b>Select Company</b></label>
+                        <br>
+                        <select class="selectpicker form_control" style="width: 80vw;idth: 80vw;text-align: center; margin-left: 90px ;margin: 15px" id="company" name="company", required="1" onchange="load_model(this.id,'model')">
+                            {% for company in companies%}
+                            <option value="{{company}}">{{company}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="border" style="text-align: center">
+                        <label><b>Select Model</b></label>
+                        <br>
+                        <select  class="selectpicker form_control" style="width: 80vw;idth: 80vw;text-align: center; margin-left: 90px;margin: 15px" id="model" name="model", required="1">
+                            {% for m in models%}
+                            <option value="{{m}}">{{m}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="border" style="text-align: center">
+                        <label><b>Select Year</b></label>
+                        <br>
+                        <select class="selectpicker form_control" style="width: 80vw;idth: 80vw;text-align: center; margin-left: 90px;margin: 15px" id="year" name="year", required="1">
+
+                            {% for y in year%}
+                            <option value="{{y}}">{{y}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="border" style="text-align: center">
+                        <label><b>KM Driven :</b></label>
+
+                        <input class="form-control" type="text" id="km_driven" name="km_driven" placeholder="Enter Number of KM">
+                    </div>
+                    <div class="border" style="text-align: center">
+                        <label><b>Select Fuel Type</b></label>
+                        <br>
+                        <select class="selectpicker form_control" style="width: 80vw;idth: 80vw;text-align: center; margin-left: 90px;margin: 15px" id="fuel" name="fuel", required="1">
+
+                            {% for type in fuel_type%}
+                            <option value="{{type}}">{{type}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                <div    style="display: flex;justify-content: center;align-content: center">
+                    <button style="background-color: coral;padding: 5px;font-size: 25px " onclick="send_data()">
+                        Predict
+                    </button>
+                </div>
+                </form>
+                <div style="text-align: center">
+                   <h3><span id="prediction"></span></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        function load_model(company_id,model_id){
+            var company=document.getElementById(company_id);
+            var model=document.getElementById(model_id);
+
+            model.value="";
+            model.innerHTML="";
+            {% for company in companies %}
+                if (company.value=="{{company}}"){
+                    {%for model in models%}
+                        {%if company in model%}
+                            var newOption=document.createElement("option");
+                            newOption.value="{{model}}";
+                            newOption.innerHTML="{{model}}";
+                            model.options.add(newOption);
+                    {%endif%}
+                    {%endfor%}
+                }
+            {% endfor %}
+        }
+
+        function form_handler(event){
+            event.preventDefault();
+        }
+
+        function send_data(){
+            document.querySelector('form').addEventListener('submit',form_handler)
+
+            var fd= new FormData(document.querySelector('form'))
+            var xhr=new XMLHttpRequest();
+            xhr.open('POST','/predict',true);
+
+            document.getElementById("prediction").innerHTML="Wait, we are Predicting"
+            xhr.onreadystatechange=function (){
+                if(xhr.readyState==XMLHttpRequest.DONE){
+                    document.getElementById("prediction").innerHTML="Prediction: $"+xhr.responseText;
+                }
+            }
+            xhr.onload=function (){};
+            xhr.send(fd);
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script>
+
+  </body>
+</html>
